@@ -57,6 +57,7 @@ void YCbCrAddressHandler::genBaseAddress(unsigned planeCount) {
   Value *pipeBankXorNone = m_builder->getInt32(0);
 
   switch (m_gfxIp->major) {
+  case 8:
   case 9: {
     pipeBankXor1 = pipeBankXorNone;
     pipeBankXor2 = pipeBankXorNone;
@@ -136,9 +137,11 @@ Value *YCbCrAddressHandler::power2Align(Value *x, unsigned align) {
 // @param planeNum : Number of planes
 void YCbCrAddressHandler::genHeightAndPitch(unsigned bits, unsigned bpp, unsigned xBitCount, bool isTileOptimal,
                                             unsigned planeNum) {
-  m_swizzleMode = m_regHandler->getReg(SqRsrcRegs::SwizzleMode);
+  if (m_gfxIp->major > 8)
+    m_swizzleMode = m_regHandler->getReg(SqRsrcRegs::SwizzleMode);
 
   switch (m_gfxIp->major) {
+  case 8:
   case 9: {
     // Height = SqRsrcRegs::Height
     Value *height = m_regHandler->getReg(SqRsrcRegs::Height);
